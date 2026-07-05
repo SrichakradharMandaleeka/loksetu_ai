@@ -426,12 +426,26 @@ app.get("/api/issues", (req, res) => {
   res.json(issues);
 });
 
+const CONSTITUENCY_CENTERS: Record<string, { lat: number, lng: number }> = {
+  "Lucknow Central": { lat: 26.8467, lng: 80.9462 },
+  "Varanasi Cantt": { lat: 25.3176, lng: 82.9739 },
+  "Gorakhpur Urban": { lat: 26.7606, lng: 83.3731 },
+  "Vijayawada Central": { lat: 16.5062, lng: 80.6480 },
+  "Visakhapatnam East": { lat: 17.7225, lng: 83.3148 },
+  "Tirupati": { lat: 13.6288, lng: 79.4192 },
+  "Guntur West": { lat: 16.3067, lng: 80.4365 },
+  "Nellore City": { lat: 14.4426, lng: 79.9865 }
+};
+
 // 2. POST /api/issues (Submit new issue)
 app.post("/api/issues", async (req, res) => {
-  const { title, description, category, ward, address, lat, lng, image, voiceUrl, citizenId, citizenName } = req.body;
+  const { title, description, category, ward, address, lat, lng, image, voiceUrl, citizenId, citizenName, constituency } = req.body;
   if (!title || !description || !category || !ward) {
     return res.status(400).json({ error: "Title, description, category, and ward are required." });
   }
+
+  const userConstituency = constituency || "Lucknow Central";
+  const center = CONSTITUENCY_CENTERS[userConstituency] || CONSTITUENCY_CENTERS["Lucknow Central"];
 
   const issues = loadIssues();
   const id = "iss_" + Math.random().toString(36).substr(2, 9);
@@ -442,9 +456,10 @@ app.post("/api/issues", async (req, res) => {
     description,
     category,
     ward,
-    address: address || `${ward}, Lucknow`,
-    lat: lat || 26.8467 + (Math.random() - 0.5) * 0.05,
-    lng: lng || 80.9462 + (Math.random() - 0.5) * 0.05,
+    constituency: userConstituency,
+    address: address || `${ward}, ${userConstituency}`,
+    lat: lat || center.lat + (Math.random() - 0.5) * 0.03,
+    lng: lng || center.lng + (Math.random() - 0.5) * 0.03,
     image,
     voiceUrl,
     upvotes: 0,

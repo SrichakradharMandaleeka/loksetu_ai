@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Landmark, Sparkles, User, ShieldAlert, ArrowRight, CheckCircle2 } from 'lucide-react';
-import { UserRole } from '../types';
+import { UserRole, CONSTITUENCIES } from '../types';
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, signOut } from 'firebase/auth';
 
 interface AuthPageProps {
   onLoginSuccess: (name: string, email: string, role: UserRole, constituency: string) => void;
   defaultMode?: 'login' | 'register';
+  onSelectRoleDirect?: (role: 'citizen' | 'mp') => void;
 }
 
-export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess, defaultMode = 'login' }) => {
+export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess, defaultMode = 'login', onSelectRoleDirect }) => {
   const [mode, setMode] = useState<'login' | 'register'>(defaultMode);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -185,9 +186,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess, defaultMode 
                   onChange={(e) => setConstituency(e.target.value)}
                   className="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500 text-slate-800 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 font-semibold disabled:opacity-60"
                 >
-                  <option value="Lucknow Central">Lucknow Central</option>
-                  <option value="Varanasi Cantt">Varanasi Cantt</option>
-                  <option value="New Delhi Central">New Delhi Central</option>
+                  {CONSTITUENCIES.map((c) => (
+                    <option key={c.name} value={c.name}>
+                      {c.name} ({c.state})
+                    </option>
+                  ))}
                 </select>
               </div>
             )}
@@ -214,6 +217,33 @@ export const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess, defaultMode 
                 {mode === 'login' ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
               </button>
             </div>
+
+            {onSelectRoleDirect && (
+              <>
+                <div className="relative flex py-2 items-center">
+                  <div className="flex-grow border-t border-slate-100 dark:border-slate-800"></div>
+                  <span className="flex-shrink mx-3 text-[9px] text-slate-400 font-bold uppercase tracking-wider">or continue to view</span>
+                  <div className="flex-grow border-t border-slate-100 dark:border-slate-800"></div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => onSelectRoleDirect('citizen')}
+                    className="py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-300 dark:border-slate-800 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  >
+                    Guest Citizen View
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onSelectRoleDirect('mp')}
+                    className="py-2.5 px-3 rounded-xl border border-slate-200 hover:border-slate-300 dark:border-slate-800 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
+                  >
+                    Guest MP View
+                  </button>
+                </div>
+              </>
+            )}
           </form>
         ) : (
           <div className="space-y-4 pt-2">

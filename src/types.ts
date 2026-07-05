@@ -7,6 +7,7 @@ export interface User {
   role: UserRole;
   constituency: string;
   avatar?: string;
+  isGuest?: boolean;
 }
 
 export type IssueStatus = 'submitted' | 'ai_analysis' | 'approved' | 'started' | 'completed';
@@ -42,6 +43,7 @@ export interface Issue {
   description: string;
   category: string;
   ward: string;
+  constituency?: string;
   address?: string;
   lat: number;
   lng: number;
@@ -134,4 +136,86 @@ export function calculateDevelopmentImpact(proj: ProjectProposal): DevelopmentIm
     totalImpactScore
   };
 }
+
+export const CONSTITUENCIES = [
+  // Uttar Pradesh
+  { name: "Lucknow Central", state: "Uttar Pradesh", code: "LKO CNT", river: "Gomti River", bgTheme: "from-blue-600 to-indigo-400" },
+  { name: "Varanasi Cantt", state: "Uttar Pradesh", code: "VNS CNT", river: "Ganga River", bgTheme: "from-orange-500 to-red-400" },
+  { name: "Gorakhpur Urban", state: "Uttar Pradesh", code: "GKP URB", river: "Rapti River", bgTheme: "from-amber-500 to-red-400" },
+  // Andhra Pradesh
+  { name: "Vijayawada Central", state: "Andhra Pradesh", code: "BZA CNT", river: "Krishna River", bgTheme: "from-teal-600 to-cyan-400" },
+  { name: "Visakhapatnam East", state: "Andhra Pradesh", code: "VTG EST", river: "Bay of Bengal (Coastline)", bgTheme: "from-blue-500 to-emerald-400" },
+  { name: "Tirupati", state: "Andhra Pradesh", code: "TPT", river: "Swarnamukhi River / Tirumala Foothills", bgTheme: "from-amber-600 to-orange-400" },
+  { name: "Guntur West", state: "Andhra Pradesh", code: "GNT WST", river: "Krishna Canal Segment", bgTheme: "from-purple-600 to-indigo-400" },
+  { name: "Nellore City", state: "Andhra Pradesh", code: "NLR CTY", river: "Pennar River", bgTheme: "from-teal-500 to-blue-400" }
+];
+
+export const CONSTITUENCY_WARDS: Record<string, string[]> = {
+  "Lucknow Central": [
+    "Ward 12 - Gomti Sector",
+    "Ward 14 - Central Metro",
+    "Ward 22 - Green Meadows",
+    "Ward 08 - Industrial Hub",
+    "Ward 15 - Hazratganj Zone",
+    "Ward 18 - Aliganj Extension",
+    "Ward 24 - Indira Nagar South",
+    "Ward 05 - Chowk Heritage Sector"
+  ],
+  "Varanasi Cantt": [
+    "Ward 01 - Assi Ghat Sector",
+    "Ward 03 - Sarnath Extension",
+    "Ward 06 - Dashashwamedh Zone",
+    "Ward 10 - Cantonment Area",
+    "Ward 11 - Sigra Sports Block",
+    "Ward 17 - Nadesar Gardens"
+  ],
+  "Gorakhpur Urban": [
+    "Ward 02 - Ramgarh Tal Bypass",
+    "Ward 04 - Golghar Commercial",
+    "Ward 07 - Medical College Zone",
+    "Ward 09 - Gorakhnath Sector",
+    "Ward 13 - Rapti Nagar Colony"
+  ],
+  "Vijayawada Central": [
+    "Ward 11 - Benz Circle Area",
+    "Ward 13 - Governorpet Commercial",
+    "Ward 16 - Gunadala Hill Colony",
+    "Ward 19 - Satyanarayanapuram Sector",
+    "Ward 21 - Moghalrajpuram Caves Zone",
+    "Ward 26 - Labbipet Residential"
+  ],
+  "Visakhapatnam East": [
+    "Ward 20 - MVP Colony Beachside",
+    "Ward 23 - Gajuwaka Steel Sector",
+    "Ward 25 - Jagadamba Commercial",
+    "Ward 27 - Rushikonda IT Zone",
+    "Ward 29 - Seethammadhara Block",
+    "Ward 31 - Beach Road Promenade"
+  ],
+  "Tirupati": [
+    "Ward 30 - Alipiri Temple Gateway",
+    "Ward 32 - Kapila Theertham Sector",
+    "Ward 35 - TU Campus Zone",
+    "Ward 38 - Balaji Colony Residential",
+    "Ward 41 - Tiruchanur Road Junction",
+    "Ward 44 - Karakambadi Industrial Zone"
+  ],
+  "Guntur West": [
+    "Ward 40 - Brodipet Residential",
+    "Ward 42 - Arundelpet Commercial",
+    "Ward 45 - Vidyanagar Education Zone",
+    "Ward 48 - Gorantla Bypass Sector",
+    "Ward 51 - Gujjanagundla Lake Ring",
+    "Ward 53 - Lakshmipuram Hub"
+  ],
+  "Nellore City": [
+    "Ward 50 - Stonehousepet Area",
+    "Ward 52 - Podalakur Road Sector",
+    "Ward 55 - Haranathapuram Residential",
+    "Ward 58 - Kovur Bridge Bypass",
+    "Ward 61 - Nellore Santhapet Block",
+    "Ward 64 - Dargamitta Zone"
+  ]
+};
+
 

@@ -7,7 +7,7 @@ import { MPDashboard } from './components/MPDashboard';
 import { IssueDetails } from './components/IssueDetails';
 import { AIChatBot } from './components/AIChatBot';
 import { Issue, ProjectProposal, User, UserRole, Notification } from './types';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Sparkles } from 'lucide-react';
 import { auth } from './firebase';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 
@@ -175,7 +175,8 @@ export default function App() {
       name: role === 'mp' ? 'Suresh P. Singh' : 'Arjun Sharma',
       email: role === 'mp' ? 'suresh.mp@sansad.in' : 'arjun.lko@gmail.com',
       role,
-      constituency: 'Lucknow Central'
+      constituency: 'Lucknow Central',
+      isGuest: true
     };
     setCurrentUser(defaultUser);
     setCurrentRole(role);
@@ -203,11 +204,12 @@ export default function App() {
           description,
           category,
           ward,
-          address: address || `${ward}, Lucknow`,
+          address: address || `${ward}, ${currentUser?.constituency || 'Lucknow Central'}`,
           image: image || undefined,
           voiceUrl: voiceUrl || undefined,
           citizenId: currentUser?.id || "cit_default",
-          citizenName: currentUser?.name || "Citizen User"
+          citizenName: currentUser?.name || "Citizen User",
+          constituency: currentUser?.constituency || "Lucknow Central"
         })
       });
 
@@ -417,6 +419,23 @@ export default function App() {
     return projects.find(p => p.issueId === issueId) || null;
   };
 
+  const userConstituency = currentUser?.constituency || 'Lucknow Central';
+  const filteredIssues = issues.filter(issue => {
+    if (issue.constituency) {
+      return issue.constituency === userConstituency;
+    }
+    return userConstituency === 'Lucknow Central';
+  });
+
+  const filteredProjects = projects.filter(proj => {
+    const parentIssue = issues.find(i => i.id === proj.issueId);
+    if (!parentIssue) return true;
+    if (parentIssue.constituency) {
+      return parentIssue.constituency === userConstituency;
+    }
+    return userConstituency === 'Lucknow Central';
+  });
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300">
       
@@ -440,6 +459,34 @@ export default function App() {
 
         {!loading && authInitialized && (
           <>
+            {/* Guest Banner if viewing dashboard or details as a guest */}
+            {currentUser?.isGuest && (activeTab === 'citizen-dashboard' || activeTab === 'mp-dashboard' || activeTab === 'issue-details') && (
+              <div className="mb-6 bg-gradient-to-r from-amber-500/10 via-amber-600/5 to-transparent border border-amber-500/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 animate-in fade-in slide-in-from-top-3 duration-300">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
+                    <Sparkles className="h-4.5 w-4.5 animate-pulse" />
+                  </span>
+                  <div>
+                    <h4 className="font-display font-bold text-slate-800 dark:text-white text-xs">
+                      Currently Exploring as an Unauthenticated Guest
+                    </h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed mt-0.5">
+                      You are viewing the {currentUser.role === 'mp' ? 'MP' : 'Citizen'} dashboard as a guest ({currentUser.name} for {currentUser.constituency}).
+                      Sign in or register for a verified account to submit complaints, cast real upvotes, or authorize development budgets.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setActiveTab('login');
+                  }}
+                  className="self-start sm:self-auto shrink-0 text-[11px] font-bold bg-amber-500 hover:bg-amber-600 text-slate-950 px-3.5 py-1.5 rounded-lg shadow-sm transition cursor-pointer"
+                >
+                  Sign In or Register
+                </button>
+              </div>
+            )}
+
             {/* 1. Landing View */}
             {activeTab === 'landing' && (
               <LandingPage
@@ -455,6 +502,7 @@ export default function App() {
               <AuthPage
                 onLoginSuccess={handleLoginSuccess}
                 defaultMode="login"
+                onSelectRoleDirect={handleSelectRoleDirect}
               />
             )}
 
@@ -463,6 +511,7 @@ export default function App() {
               <AuthPage
                 onLoginSuccess={handleLoginSuccess}
                 defaultMode="register"
+                onSelectRoleDirect={handleSelectRoleDirect}
               />
             )}
 
@@ -470,7 +519,7 @@ export default function App() {
             {activeTab === 'citizen-dashboard' && currentUser && (
               <CitizenDashboard
                 currentUser={currentUser}
-                issues={issues}
+                issues={filteredIssues}
                 notifications={notifications}
                 onSubmitIssue={handleReportGrievance}
                 onUpvote={handleUpvote}
@@ -486,8 +535,8 @@ export default function App() {
             {activeTab === 'mp-dashboard' && currentUser && (
               <MPDashboard
                 currentUser={currentUser}
-                issues={issues}
-                projects={projects}
+                issues={filteredIssues}
+                projects={filteredProjects}
                 notifications={notifications}
                 onGenerateProposal={handleGenerateProposal}
                 onUpdateProjectStatus={handleUpdateProjectStatus}
@@ -501,6 +550,42 @@ export default function App() {
                 optimizingBudget={optimizingBudget}
                 generatingReport={generatingReport}
               />
+            )}
+
+            {/* Unauthenticated Dashboard Access Gate */}
+            {(activeTab === 'citizen-dashboard' || activeTab === 'mp-dashboard') && !currentUser && (
+              <div className="max-w-md mx-auto py-12 animate-in fade-in slide-in-from-bottom-4 duration-350">
+                <div className="rounded-3xl border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900 shadow-xl text-center space-y-6">
+                  <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 dark:bg-amber-950/40 dark:text-amber-400 mx-auto">
+                    <Sparkles className="h-7 w-7 animate-pulse" />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h2 className="font-display font-extrabold text-xl text-slate-900 dark:text-white tracking-tight">
+                      Authentication Required
+                    </h2>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed max-w-sm mx-auto">
+                      To access the {activeTab === 'mp-dashboard' ? 'MP' : 'Citizen'} platform, please sign in with your verified credentials or continue directly as a guest to explore.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <button
+                      onClick={() => setActiveTab('login')}
+                      className="w-full py-3 px-6 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      Sign In or Register
+                    </button>
+                    
+                    <button
+                      onClick={() => handleSelectRoleDirect(activeTab === 'mp-dashboard' ? 'mp' : 'citizen')}
+                      className="w-full py-3 px-6 rounded-xl border border-slate-200 hover:border-slate-300 dark:border-slate-800 dark:hover:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs transition flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      Continue as Guest & View Dashboard
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* 6. Issue Details View */}

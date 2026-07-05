@@ -3,7 +3,7 @@ import {
   Plus, Users, MapPin, Bell, User as UserIcon, ListFilter, 
   ThumbsUp, Volume2, Sparkles, Send, RefreshCw, Landmark, AlertTriangle 
 } from 'lucide-react';
-import { Issue, User, Notification } from '../types';
+import { Issue, User, Notification, CONSTITUENCY_WARDS } from '../types';
 import { MapComponent } from './MapComponent';
 import { VoiceRecorder } from './VoiceRecorder';
 
@@ -34,10 +34,19 @@ export const CitizenDashboard: React.FC<CitizenDashboardProps> = ({
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('Infrastructure');
-  const [ward, setWard] = useState('Ward 12 - Gomti Sector');
+  
+  const userConstituency = currentUser.constituency || 'Lucknow Central';
+  const availableWards = CONSTITUENCY_WARDS[userConstituency] || CONSTITUENCY_WARDS['Lucknow Central'];
+  
+  const [ward, setWard] = useState(() => availableWards[0]);
   const [address, setAddress] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [voiceUrl, setVoiceUrl] = useState('');
+
+  React.useEffect(() => {
+    const freshWards = CONSTITUENCY_WARDS[currentUser.constituency] || CONSTITUENCY_WARDS['Lucknow Central'];
+    setWard(freshWards[0]);
+  }, [currentUser.constituency]);
 
   // Status Filter State
   const [selectedStatusIssue, setSelectedStatusIssue] = useState<Issue | null>(
@@ -190,14 +199,11 @@ export const CitizenDashboard: React.FC<CitizenDashboardProps> = ({
                     onChange={(e) => setWard(e.target.value)}
                     className="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500 text-slate-800 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200 font-semibold"
                   >
-                    <option value="Ward 12 - Gomti Sector">Ward 12 - Gomti Sector</option>
-                    <option value="Ward 14 - Central Metro">Ward 14 - Central Metro</option>
-                    <option value="Ward 22 - Green Meadows">Ward 22 - Green Meadows</option>
-                    <option value="Ward 08 - Industrial Hub">Ward 08 - Industrial Hub</option>
-                    <option value="Ward 15 - Hazratganj Zone">Ward 15 - Hazratganj Zone</option>
-                    <option value="Ward 18 - Aliganj Extension">Ward 18 - Aliganj Extension</option>
-                    <option value="Ward 24 - Indira Nagar South">Ward 24 - Indira Nagar South</option>
-                    <option value="Ward 05 - Chowk Heritage Sector">Ward 05 - Chowk Heritage Sector</option>
+                    {availableWards.map((w) => (
+                      <option key={w} value={w}>
+                        {w}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
@@ -451,6 +457,7 @@ export const CitizenDashboard: React.FC<CitizenDashboardProps> = ({
               <MapComponent
                 issues={issues}
                 onSelectIssue={onViewIssueDetail}
+                currentConstituency={currentUser.constituency}
               />
             </div>
           </div>

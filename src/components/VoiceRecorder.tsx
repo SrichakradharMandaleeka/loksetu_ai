@@ -5,12 +5,23 @@ interface VoiceRecorderProps {
   onRecordingComplete: (voiceUrl: string) => void;
 }
 
+const LANGUAGES = [
+  { code: 'te', name: 'Telugu (తెలుగు)', native: 'Telugu' },
+  { code: 'ta', name: 'Tamil (தமிழ்)', native: 'Tamil' },
+  { code: 'hi', name: 'Hindi (हिन्दी)', native: 'Hindi' },
+  { code: 'en', name: 'English', native: 'English' },
+  { code: 'kn', name: 'Kannada (ಕನ್ನಡ)', native: 'Kannada' },
+  { code: 'ml', name: 'Malayalam (മലയാളം)', native: 'Malayalam' },
+  { code: 'ur', name: 'Urdu (اردو)', native: 'Urdu' }
+];
+
 export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplete }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [hasRecorded, setHasRecorded] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [voiceUrl, setVoiceUrl] = useState<string | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState('Telugu');
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -35,7 +46,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplet
   const stopRecording = () => {
     setIsRecording(false);
     setHasRecorded(true);
-    const mockUrl = `https://aistudio.google.com/voice_grievances/rec_${Math.floor(Math.random() * 100000)}.wav`;
+    const mockUrl = `https://aistudio.google.com/voice_grievances/rec_${Math.floor(Math.random() * 100000)}.wav?lang=${encodeURIComponent(selectedLanguage)}`;
     setVoiceUrl(mockUrl);
     onRecordingComplete(mockUrl);
   };
@@ -53,15 +64,30 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplet
   };
 
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
-      <div className="flex items-center justify-between mb-4">
+    <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-5 dark:border-slate-800/80 dark:bg-slate-900/40 animate-in fade-in duration-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800/80">
         <div>
-          <h4 className="font-display font-semibold text-slate-800 dark:text-slate-200 text-sm">
-            Voice Grievance Recorder (Hindi/English)
+          <h4 className="font-display font-semibold text-slate-800 dark:text-slate-200 text-sm flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-rose-500 shrink-0" />
+            Voice Grievance Recorder
           </h4>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Record in Hindi, Awadhi, Urdu, or English. Gemini automatically detects, translates, and logs the details.
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Record in your regional language. Gemini automatically transcribes and translates it.
           </p>
+        </div>
+        
+        <div className="flex items-center space-x-2 shrink-0">
+          <label className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Language:</label>
+          <select
+            value={selectedLanguage}
+            onChange={(e) => setSelectedLanguage(e.target.value)}
+            disabled={isRecording || hasRecorded}
+            className="bg-white border border-slate-200 rounded-lg px-2 py-1 text-xs focus:outline-none focus:border-blue-500 text-slate-700 font-bold dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 disabled:opacity-60 cursor-pointer"
+          >
+            {LANGUAGES.map(l => (
+              <option key={l.code} value={l.native}>{l.name}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -71,8 +97,8 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplet
           onClick={startRecording}
           className="w-full flex items-center justify-center gap-2.5 py-4 px-6 rounded-xl border border-dashed border-slate-300 text-slate-700 hover:border-blue-500 hover:text-blue-600 dark:border-slate-700 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400 bg-white dark:bg-slate-800 transition-all font-medium text-xs shadow-sm hover:shadow"
         >
-          <Mic className="h-4.5 w-4.5 text-rose-500 animate-pulse" />
-          Click to Speak (Record Audio Report)
+          <Mic className="h-4.5 w-4.5 text-rose-500 animate-pulse shrink-0" />
+          Click to Speak (Record Audio Report in {selectedLanguage})
         </button>
       )}
 
@@ -81,7 +107,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplet
           <div className="flex items-center space-x-2">
             <span className="h-3 w-3 rounded-full bg-rose-500 animate-ping" />
             <span className="text-xs font-mono font-semibold text-rose-600 dark:text-rose-400">
-              RECORDING LIVE — {formatTime(seconds)}
+              RECORDING LIVE ({selectedLanguage}) — {formatTime(seconds)}
             </span>
           </div>
 
@@ -105,9 +131,9 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplet
           <button
             type="button"
             onClick={stopRecording}
-            className="flex items-center gap-2 px-5 py-2 rounded-lg bg-slate-900 text-white font-semibold text-xs hover:bg-slate-800 shadow"
+            className="flex items-center gap-2 px-5 py-2 rounded-lg bg-slate-900 text-white font-semibold text-xs hover:bg-slate-800 shadow cursor-pointer"
           >
-            <Square className="h-3.5 w-3.5 fill-current" />
+            <Square className="h-3.5 w-3.5 fill-current shrink-0" />
             Finish & Process Voice
           </button>
         </div>
@@ -119,16 +145,16 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplet
             <button
               type="button"
               onClick={() => setIsPlaying(!isPlaying)}
-              className="h-8 w-8 rounded-full flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition"
+              className="h-8 w-8 rounded-full flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition cursor-pointer"
             >
-              {isPlaying ? <Pause className="h-4 w-4 fill-current" /> : <Play className="h-4 w-4 fill-current pl-0.5" />}
+              {isPlaying ? <Pause className="h-4 w-4 fill-current shrink-0" /> : <Play className="h-4 w-4 fill-current pl-0.5 shrink-0" />}
             </button>
             <div>
               <span className="text-xs font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-1">
-                <Check className="h-3.5 w-3.5 text-emerald-500" /> RecordedGrievance_0407.wav
+                <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" /> RecordedGrievance_0407.wav
               </span>
               <p className="text-[10px] text-blue-600/80 dark:text-blue-400/80 font-medium font-mono">
-                Duration: 0:24 • Ready for AI Translation & Analysis
+                Duration: 0:24 • Ready for {selectedLanguage} AI Translation & Analysis
               </p>
             </div>
           </div>
@@ -136,9 +162,9 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({ onRecordingComplet
           <button
             type="button"
             onClick={handleDelete}
-            className="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors"
+            className="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors cursor-pointer"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-4 w-4 shrink-0" />
           </button>
         </div>
       )}

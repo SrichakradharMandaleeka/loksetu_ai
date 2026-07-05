@@ -214,6 +214,7 @@ export const MPDashboard: React.FC<MPDashboardProps> = ({
               <MapComponent
                 issues={issues}
                 onSelectIssue={onViewIssueDetail}
+                currentConstituency={currentUser.constituency}
               />
             </div>
           </div>
