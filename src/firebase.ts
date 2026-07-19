@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCPKpWeOxMu4STLmr5cDtpKfBpDlfiYOCI",
+  apiKey: "Give your api key",
   authDomain: "loksetu-ai.firebaseapp.com",
   projectId: "loksetu-ai",
   storageBucket: "loksetu-ai.firebasestorage.app",
