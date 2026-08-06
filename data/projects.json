@@ -1,0 +1,65 @@
+[
+  {
+    "id": "proj_001",
+    "issueId": "iss_001",
+    "issueTitle": "Bridge Structural Degradation",
+    "problemSummary": "River bridge support pillars are showing severe concrete degradation and reinforcement rust, creating immediate commuter risk.",
+    "recommendedProject": "Gomti River Bridge Structural Reinforcement & Grouting Work",
+    "estimatedBudget": 35000000,
+    "completionTime": "4 months",
+    "expectedBeneficiaries": 12400,
+    "riskAnalysis": "Requires heavy crane deployment on barges. Potential slow flow of river can occur. Commuting traffic needs redirection during column repair.",
+    "environmentalImpact": "Low. Grouting materials used are eco-certified; barrier nets placed to prevent debris from falling in water.",
+    "socialImpact": "High. Secures lives of thousands of commuters daily and restores safe agricultural transit.",
+    "responsibleDepartment": "Public Works Department (PWD)",
+    "priorityScore": 98,
+    "sdgGoals": [
+      "SDG 9: Industry, Innovation, and Infrastructure",
+      "SDG 11: Sustainable Cities and Communities"
+    ],
+    "status": "approved",
+    "dateGenerated": "2026-06-26T12:00:00Z"
+  },
+  {
+    "id": "proj_002",
+    "issueId": "iss_002",
+    "issueTitle": "Water Contamination in Sector 4",
+    "problemSummary": "underground water pipelines leaking sewage mud into Hazratganj residential sectors.",
+    "recommendedProject": "Hazratganj Segmented Drinking Water Main Laying & Overhaul",
+    "estimatedBudget": 18000000,
+    "completionTime": "2 months",
+    "expectedBeneficiaries": 2500,
+    "riskAnalysis": "Excavation in dense housing areas can disrupt local telephone and power cables. Ground stabilization needed.",
+    "environmentalImpact": "Zero water leakage avoids local mudding and groundwater degradation.",
+    "socialImpact": "Eradicates waterborne gastroenteritis infections, securing basic clean water access.",
+    "responsibleDepartment": "Water & Sanitation (Jal Sansthan)",
+    "priorityScore": 92,
+    "sdgGoals": [
+      "SDG 6: Clean Water and Sanitation",
+      "SDG 3: Good Health and Well-being"
+    ],
+    "status": "draft",
+    "dateGenerated": "2026-06-29T10:00:00Z"
+  },
+  {
+    "id": "proj_003",
+    "issueId": "iss_007",
+    "issueTitle": "Government Primary School Structural Safety",
+    "problemSummary": "Government school building showing severe roof plaster degradation and water seepage in classrooms.",
+    "recommendedProject": "Aliganj Primary School Structural Refurbishment & Safety Grouting",
+    "estimatedBudget": 2400000,
+    "completionTime": "3 months",
+    "expectedBeneficiaries": 150,
+    "riskAnalysis": "School remains in session. Work needs planning during summer holidays or evening hours to avoid noise disruption.",
+    "environmentalImpact": "Zero chemical emissions. Use of non-toxic wall paints and eco-plaster.",
+    "socialImpact": "Ensures structural safety of children, boosting parent confidence and retention.",
+    "responsibleDepartment": "Basic Education Department",
+    "priorityScore": 84,
+    "sdgGoals": [
+      "SDG 4: Quality Education",
+      "SDG 11: Sustainable Cities & Communities"
+    ],
+    "status": "draft",
+    "dateGenerated": "2026-06-30T10:00:00Z"
+  }
+]
